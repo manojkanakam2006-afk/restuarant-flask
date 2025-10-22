@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Dashboard - Food Munch</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://kit.fontawesome.com/d1c2ea8b80.js" crossorigin="anonymous"></script>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap");
+    
+    * { font-family: 'Roboto', sans-serif; margin: 0; padding: 0; box-sizing: border-box; }
+    body { background-color: #f5f7fa; }
+    
+    .admin-navbar {
+      background: linear-gradient(135deg, #d0b200 0%, #b89f00 100%);
+      color: white;
+      padding: 15px 0;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .admin-navbar h2 {
+      margin: 0;
+      font-weight: 300;
+    }
+    
+    .admin-info {
+      display: flex;
+      align-items: center;
+      color: white;
+    }
+    
+    .admin-info i {
+      font-size: 32px;
+      margin-right: 15px;
+    }
+    
+    .logout-btn {
+      background: rgba(255,255,255,0.2);
+      color: white;
+      border: 2px solid white;
+      padding: 8px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s;
+      margin-left: 20px;
+    }
+    
+    .logout-btn:hover {
+      background: white;
+      color: #d0b200;
+    }
+    
+    .stats-card {
+      background: white;
+      border-radius: 10px;
+      padding: 25px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      transition: all 0.3s;
+    }
+    
+    .stats-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    }
+    
+    .stats-card h3 {
+      font-size: 36px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    
+    .stats-card p {
+      color: #666;
+      margin: 0;
+    }
+    
+    .stats-icon {
+      font-size: 48px;
+      margin-bottom: 15px;
+    }
+    
+    .stat-orders { color: #17a2b8; }
+    .stat-revenue { color: #28a745; }
+    .stat-customers { color: #fd7e14; }
+    .stat-delivery { color: #6f42c1; }
+    
+    .tab-buttons {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .tab-btn {
+      background: #f8f9fa;
+      border: none;
+      padding: 12px 25px;
+      margin: 5px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+    
+    .tab-btn:hover {
+      background: #e9ecef;
+    }
+    
+    .tab-btn.active {
+      background: #d0b200;
+      color: white;
+    }
+    
+    .content-section {
+      background: white;
+      border-radius: 10px;
+      padding: 25px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      display: none;
+    }
+    
+    .content-section.active {
+      display: block;
+    }
+    
+    .order-card {
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 15px;
+      transition: all 0.3s;
+    }
+    
+    .order-card:hover {
+      box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+    }
+    
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .order-status {
+      padding: 6px 15px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: bold;
+    }
+    
+    .status-pending { background: #ffc107; color: #000; }
+    .status-assigned { background: #17a2b8; color: #fff; }
+    .status-delivering { background: #fd7e14; color: #fff; }
+    .status-delivered { background: #28a745; color: #fff; }
+    
+    .assign-btn {
+      background: #17a2b8;
+      color: white;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+    
+    .assign-btn:hover {
+      background: #138496;
+    }
+    
+    .table-responsive {
+      margin-top: 20px;
+    }
+    
+    .table {
+      background: white;
+    }
+    
+    .table thead {
+      background: #f8f9fa;
+    }
+    
+    .action-btn {
+      padding: 5px 15px;
+      margin: 2px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.3s;
+    }
+    
+    .btn-view {
+      background: #17a2b8;
+      color: white;
+    }
+    
+    .btn-delete {
+      background: #dc3545;
+      color: white;
+    }
+    
+    .filter-section {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .filter-section select,
+    .filter-section input {
+      padding: 8px 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    
+    .search-box {
+      flex: 1;
+      min-width: 250px;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #999;
+    }
+    
+    .empty-state i {
+      font-size: 64px;
+      color: #ddd;
+      margin-bottom: 20px;
+    }
+    
+    .feedback-card {
+      border-left: 4px solid #d0b200;
+      padding: 15px;
+      margin-bottom: 15px;
+      background: #f8f9fa;
+      border-radius: 5px;
+    }
+    
+    .rating-display {
+      color: #d0b200;
+      font-size: 18px;
+    }
+    
+    .refresh-btn {
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s;
+      float: right;
+    }
+    
+    .refresh-btn:hover {
+      background: #218838;
+    }
+  </style>
+</head>
+<body>
+  <!-- Admin Navbar -->
+  <div class="admin-navbar">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h2><i class="fas fa-user-shield"></i> Admin Dashboard</h2>
+        </div>
+        <div class="admin-info">
+          <i class="fas fa-user-circle"></i>
+          <div>
+            <strong id="adminName">Admin</strong>
+            <button class="logout-btn" onclick="logout()">
+              <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Section -->
+  <div class="container mt-4">
+    <div class="row">
+      <div class="col-md-3">
+        <div class="stats-card text-center">
+          <i class="fas fa-shopping-cart stats-icon stat-orders"></i>
+          <h3 id="totalOrders">0</h3>
+          <p>Total Orders</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stats-card text-center">
+          <i class="fas fa-rupee-sign stats-icon stat-revenue"></i>
+          <h3>₹<span id="totalRevenue">0</span></h3>
+          <p>Total Revenue</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stats-card text-center">
+          <i class="fas fa-users stats-icon stat-customers"></i>
+          <h3 id="totalCustomers">0</h3>
+          <p>Total Customers</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stats-card text-center">
+          <i class="fas fa-motorcycle stats-icon stat-delivery"></i>
+          <h3 id="totalDeliveryBoys">0</h3>
+          <p>Delivery Boys</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab Buttons -->
+    <div class="tab-buttons">
+      <button class="tab-btn active" onclick="showTab('orders')">
+        <i class="fas fa-list"></i> Orders Management
+      </button>
+      <button class="tab-btn" onclick="showTab('customers')">
+        <i class="fas fa-users"></i> Customers
+      </button>
+      <button class="tab-btn" onclick="showTab('deliveryBoys')">
+        <i class="fas fa-motorcycle"></i> Delivery Boys
+      </button>
+      <button class="tab-btn" onclick="showTab('feedback')">
+        <i class="fas fa-comments"></i> Feedback
+      </button>
+      <button class="tab-btn" onclick="showTab('analytics')">
+        <i class="fas fa-chart-bar"></i> Analytics
+      </button>
+    </div>
+
+    <!-- Orders Section -->
+    <div id="ordersSection" class="content-section active">
+      <h3>Orders Management</h3>
+      <button class="refresh-btn" onclick="loadOrders()">
+        <i class="fas fa-sync-alt"></i> Refresh
+      </button>
+      <div class="clearfix"></div>
+      
+      <div class="filter-section mt-3">
+        <select id="orderStatusFilter" onchange="filterOrders()">
+          <option value="all">All Status</option>
+          <option value="pending_assignment">Pending Assignment</option>
+          <option value="assigned">Assigned</option>
+          <option value="out_for_delivery">Out for Delivery</option>
+          <option value="delivered">Delivered</option>
+        </select>
+        <input type="date" id="orderDateFilter" onchange="filterOrders()" class="form-control" style="width: 200px;">
+        <input type="text" id="orderSearchBox" placeholder="Search by Order ID or Customer..." class="form-control search-box" onkeyup="filterOrders()">
+      </div>
+      
+      <div id="ordersContainer"></div>
+    </div>
+
+    <!-- Customers Section -->
+    <div id="customersSection" class="content-section">
+      <h3>Customer Management</h3>
+      <button class="refresh-btn" onclick="loadCustomers()">
+        <i class="fas fa-sync-alt"></i> Refresh
+      </button>
+      <div class="clearfix"></div>
+      
+      <div class="filter-section mt-3">
+        <input type="text" id="customerSearchBox" placeholder="Search customers..." class="form-control search-box" onkeyup="filterCustomers()">
+      </div>
+      
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Address</th>
+              <th>Joined Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="customersTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Delivery Boys Section -->
+    <div id="deliveryBoysSection" class="content-section">
+      <h3>Delivery Boys Management</h3>
+      <button class="refresh-btn" onclick="loadDeliveryBoys()">
+        <i class="fas fa-sync-alt"></i> Refresh
+      </button>
+      <div class="clearfix"></div>
+      
+      <div class="filter-section mt-3">
+        <select id="deliveryStatusFilter" onchange="filterDeliveryBoys()">
+          <option value="all">All Status</option>
+          <option value="available">Available</option>
+          <option value="busy">Busy</option>
+        </select>
+        <input type="text" id="deliverySearchBox" placeholder="Search delivery boys..." class="form-control search-box" onkeyup="filterDeliveryBoys()">
+      </div>
+      
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Vehicle Number</th>
+              <th>Status</th>
+              <th>Current Orders</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="deliveryBoysTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Feedback Section -->
+    <div id="feedbackSection" class="content-section">
+      <h3>Customer Feedback</h3>
+      <button class="refresh-btn" onclick="loadFeedback()">
+        <i class="fas fa-sync-alt"></i> Refresh
+      </button>
+      <div class="clearfix"></div>
+      
+      <div class="filter-section mt-3">
+        <select id="ratingFilter" onchange="filterFeedback()">
+          <option value="all">All Ratings</option>
+          <option value="5">5 Stars</option>
+          <option value="4">4 Stars</option>
+          <option value="3">3 Stars</option>
+          <option value="2">2 Stars</option>
+          <option value="1">1 Star</option>
+        </select>
+      </div>
+      
+      <div id="feedbackContainer"></div>
+    </div>
+
+    <!-- Analytics Section -->
+    <div id="analyticsSection" class="content-section">
+      <h3>Analytics & Reports</h3>
+      <div class="row mt-4">
+        <div class="col-md-6">
+          <div class="stats-card">
+            <h5>Order Statistics</h5>
+            <div class="mt-3">
+              <p><strong>Pending Orders:</strong> <span id="pendingOrdersCount">0</span></p>
+              <p><strong>Assigned Orders:</strong> <span id="assignedOrdersCount">0</span></p>
+              <p><strong>Out for Delivery:</strong> <span id="deliveringOrdersCount">0</span></p>
+              <p><strong>Delivered Orders:</strong> <span id="deliveredOrdersCount">0</span></p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="stats-card">
+            <h5>Revenue Statistics</h5>
+            <div class="mt-3">
+              <p><strong>Today's Revenue:</strong> ₹<span id="todayRevenue">0</span></p>
+              <p><strong>This Week:</strong> ₹<span id="weekRevenue">0</span></p>
+              <p><strong>This Month:</strong> ₹<span id="monthRevenue">0</span></p>
+              <p><strong>Average Order Value:</strong> ₹<span id="avgOrderValue">0</span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Assign Delivery Modal -->
+  <div class="modal fade" id="assignDeliveryModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header" style="background: #d0b200; color: white;">
+          <h5 class="modal-title">Assign Delivery Boy</h5>
+          <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p><strong>Order ID:</strong> <span id="assignOrderId"></span></p>
+          <p><strong>Customer:</strong> <span id="assignCustomerName"></span></p>
+          <div class="form-group mt-3">
+            <label><strong>Select Delivery Boy:</strong></label>
+            <select class="form-control" id="deliveryBoySelect"></select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button class="btn btn-success" onclick="confirmAssignment()">Assign</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'http://localhost:5000/api';
+    let currentAdmin = null;
+    let allOrders = [];
+    let allCustomers = [];
+    let allDeliveryBoys = [];
+    let allFeedback = [];
+    let currentOrderToAssign = null;
+
+    window.onload = function() {
+      checkAdminLogin();
+      loadDashboardData();
+    };
+
+    function checkAdminLogin() {
+      const adminData = localStorage.getItem('currentAdmin');
+      if (!adminData) {
+        alert('❌ Please login as admin first!');
+        window.location.href = 'index.html';
+        return;
+      }
+      currentAdmin = JSON.parse(adminData);
+      document.getElementById('adminName').textContent = currentAdmin.name;
+    }
+
+    function logout() {
+      if (confirm('Are you sure you want to logout?')) {
+        localStorage.removeItem('currentAdmin');
+        window.location.href = 'index.html';
+      }
+    }
+
+    async function loadDashboardData() {
+      await loadOrders();
+      await loadCustomers();
+      await loadDeliveryBoys();
+      await loadFeedback();
+      calculateAnalytics();
+    }
+
+    async function loadOrders() {
+      try {
+        const response = await fetch(`${API_URL}/admin/orders`);
+        const data = await response.json();
+        if (data.success) {
+          allOrders = data.orders;
+          displayOrders(allOrders);
+          document.getElementById('totalOrders').textContent = allOrders.length;
+          
+          const totalRevenue = allOrders.reduce((sum, order) => sum + order.total, 0);
+          document.getElementById('totalRevenue').textContent = totalRevenue;
+        }
+      } catch (error) {
+        console.error('Error loading orders:', error);
+      }
+    }
+
+    function displayOrders(orders) {
+      const container = document.getElementById('ordersContainer');
+      
+      if (orders.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-box-open"></i>
+            <p>No orders found</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = orders.map(order => {
+        let statusClass = '';
+        if (order.delivery_status === 'pending_assignment') statusClass = 'status-pending';
+        else if (order.delivery_status === 'assigned') statusClass = 'status-assigned';
+        else if (order.delivery_status === 'out_for_delivery') statusClass = 'status-delivering';
+        else if (order.delivery_status === 'delivered') statusClass = 'status-delivered';
+
+        return `
+          <div class="order-card">
+            <div class="order-header">
+              <div>
+                <h5><i class="fas fa-receipt"></i> Order #${order.id}</h5>
+                <p class="text-muted mb-0">${formatDateTime(order.created_at)}</p>
+              </div>
+              <span class="order-status ${statusClass}">${order.status}</span>
+            </div>
+            
+            <div class="row">
+              <div class="col-md-6">
+                <p><strong><i class="fas fa-user"></i> Customer:</strong> ${order.customer_name}</p>
+                <p><strong><i class="fas fa-phone"></i> Phone:</strong> ${order.phone}</p>
+                <p><strong><i class="fas fa-map-marker-alt"></i> Address:</strong> ${order.address}</p>
+              </div>
+              <div class="col-md-6">
+                <p><strong>Items:</strong></p>
+                <ul>
+                  ${order.items.map(item => `<li>${item.name} x ${item.quantity} = ₹${item.price * item.quantity}</li>`).join('')}
+                </ul>
+                <h5 class="text-success">Total: ₹${order.total}</h5>
+              </div>
+            </div>
+            
+            ${order.delivery_boy_name ? `
+              <div class="mt-3 p-3" style="background: #e7f3ff; border-radius: 5px;">
+                <strong><i class="fas fa-motorcycle"></i> Assigned to:</strong> ${order.delivery_boy_name} 
+                (${order.delivery_boy_phone})
+              </div>
+            ` : `
+              <button class="assign-btn mt-3" onclick="showAssignModal(${order.id}, '${order.customer_name}')">
+                <i class="fas fa-user-plus"></i> Assign Delivery Boy
+              </button>
+            `}
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function loadCustomers() {
+      try {
+        const response = await fetch(`${API_URL}/admin/customers`);
+        const data = await response.json();
+        if (data.success) {
+          allCustomers = data.customers;
+          displayCustomers(allCustomers);
+          document.getElementById('totalCustomers').textContent = allCustomers.length;
+        }
+      } catch (error) {
+        console.error('Error loading customers:', error);
+      }
+    }
+
+    function displayCustomers(customers) {
+      const tbody = document.getElementById('customersTableBody');
+      tbody.innerHTML = customers.map(customer => `
+        <tr>
+          <td>${customer.id}</td>
+          <td>${customer.name}</td>
+          <td>${customer.email}</td>
+          <td>${customer.phone}</td>
+          <td>${customer.address || 'N/A'}</td>
+          <td>${formatDate(customer.created_at)}</td>
+          <td>
+            <button class="action-btn btn-view" onclick="viewCustomerDetails(${customer.id})">
+              <i class="fas fa-eye"></i> View
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function loadDeliveryBoys() {
+      try {
+        const response = await fetch(`${API_URL}/admin/deliveryboys`);
+        const data = await response.json();
+        if (data.success) {
+          allDeliveryBoys = data.delivery_boys;
+          displayDeliveryBoys(allDeliveryBoys);
+          document.getElementById('totalDeliveryBoys').textContent = allDeliveryBoys.length;
+        }
+      } catch (error) {
+        console.error('Error loading delivery boys:', error);
+      }
+    }
+
+    function displayDeliveryBoys(deliveryBoys) {
+      const tbody = document.getElementById('deliveryBoysTableBody');
+      tbody.innerHTML = deliveryBoys.map(db => `
+        <tr>
+          <td>${db.id}</td>
+          <td>${db.name}</td>
+          <td>${db.email}</td>
+          <td>${db.phone}</td>
+          <td>${db.vehicle_number}</td>
+          <td>
+            <span class="badge ${db.current_orders > 0 ? 'badge-warning' : 'badge-success'}">
+              ${db.current_orders > 0 ? 'Busy' : 'Available'}
+            </span>
+          </td>
+          <td>${db.current_orders}</td>
+          <td>
+            <button class="action-btn btn-view" onclick="viewDeliveryBoyDetails(${db.id})">
+              <i class="fas fa-eye"></i> View
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function loadFeedback() {
+      try {
+        const response = await fetch(`${API_URL}/admin/feedback`);
+        const data = await response.json();
+        if (data.success) {
+          allFeedback = data.feedback;
+          displayFeedback(allFeedback);
+        }
+      } catch (error) {
+        console.error('Error loading feedback:', error);
+      }
+    }
+
+    function displayFeedback(feedback) {
+      const container = document.getElementById('feedbackContainer');
+      
+      if (feedback.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-comments"></i>
+            <p>No feedback yet</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = feedback.map(fb => `
+        <div class="feedback-card">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <h6>${fb.name}</h6>
+              <p class="text-muted mb-2">${fb.email}</p>
+            </div>
+            <div class="rating-display">
+              ${'★'.repeat(fb.rating)}${'☆'.repeat(5 - fb.rating)}
+            </div>
+          </div>
+          <p class="mb-2">${fb.comment}</p>
+          <small class="text-muted">${formatDateTime(fb.created_at)}</small>
+        </div>
+      `).join('');
+    }
+
+    function showAssignModal(orderId, customerName) {
+      currentOrderToAssign = orderId;
+      document.getElementById('assignOrderId').textContent = orderId;
+      document.getElementById('assignCustomerName').textContent = customerName;
+      
+      const select = document.getElementById('deliveryBoySelect');
+      const availableBoys = allDeliveryBoys.filter(db => db.current_orders < 3);
+      
+      if (availableBoys.length === 0) {
+        alert('❌ No available delivery boys at the moment!');
+        return;
+      }
+      
+      select.innerHTML = availableBoys.map(db => 
+        `<option value="${db.id}">${db.name} - ${db.vehicle_number} (${db.current_orders} orders)</option>`
+      ).join('');
+      
+      $('#assignDeliveryModal').modal('show');
+    }
+
+    async function confirmAssignment() {
+      const deliveryBoyId = document.getElementById('deliveryBoySelect').value;
+      
+      try {
+        const response = await fetch(`${API_URL}/admin/assign-order`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            order_id: currentOrderToAssign,
+            delivery_boy_id: deliveryBoyId
+          })
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          alert('✅ Order assigned successfully!');
+          $('#assignDeliveryModal').modal('hide');
+          await loadOrders();
+          await loadDeliveryBoys();
+        } else {
+          alert('❌ ' + data.message);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('❌ Failed to assign order!');
+      }
+    }
+
+    function calculateAnalytics() {
+      const pending = allOrders.filter(o => o.delivery_status === 'pending_assignment').length;
+      const assigned = allOrders.filter(o => o.delivery_status === 'assigned').length;
+      const delivering = allOrders.filter(o => o.delivery_status === 'out_for_delivery').length;
+      const delivered = allOrders.filter(o => o.delivery_status === 'delivered').length;
+      
+      document.getElementById('pendingOrdersCount').textContent = pending;
+      document.getElementById('assignedOrdersCount').textContent = assigned;
+      document.getElementById('deliveringOrdersCount').textContent = delivering;
+      document.getElementById('deliveredOrdersCount').textContent = delivered;
+      
+      const totalRevenue = allOrders.reduce((sum, o) => sum + o.total, 0);
+      const avgOrderValue = allOrders.length > 0 ? (totalRevenue / allOrders.length).toFixed(2) : 0;
+      document.getElementById('avgOrderValue').textContent = avgOrderValue;
+      
+      // Calculate today's, week's and month's revenue (simplified)
+      const today = new Date().toDateString();
+      const todayRevenue = allOrders
+        .filter(o => new Date(o.created_at).toDateString() === today)
+        .reduce((sum, o) => sum + o.total, 0);
+      document.getElementById('todayRevenue').textContent = todayRevenue;
+      document.getElementById('weekRevenue').textContent = totalRevenue;
+      document.getElementById('monthRevenue').textContent = totalRevenue;
+    }
+
+    function showTab(tabName) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
+      
+      event.target.classList.add('active');
+      document.getElementById(tabName + 'Section').classList.add('active');
+    }
+
+    function filterOrders() {
+      const status = document.getElementById('orderStatusFilter').value;
+      const date = document.getElementById('orderDateFilter').value;
+      const search = document.getElementById('orderSearchBox').value.toLowerCase();
+      
+      let filtered = allOrders;
+      
+      if (status !== 'all') {
+        filtered = filtered.filter(o => o.delivery_status === status);
+      }
+      
+      if (date) {
+        filtered = filtered.filter(o => formatDate(o.created_at) === formatDate(date));
+      }
+      
+      if (search) {
+        filtered = filtered.filter(o => 
+          o.id.toString().includes(search) || 
+          o.customer_name.toLowerCase().includes(search)
+        );
+      }
+      
+      displayOrders(filtered);
+    }
+
+    function filterCustomers() {
+      const search = document.getElementById('customerSearchBox').value.toLowerCase();
+      const filtered = allCustomers.filter(c => 
+        c.name.toLowerCase().includes(search) ||
+        c.email.toLowerCase().includes(search) ||
+        c.phone.includes(search)
+      );
+      displayCustomers(filtered);
+    }
+
+    function filterDeliveryBoys() {
+      const status = document.getElementById('deliveryStatusFilter').value;
+      const search = document.getElementById('deliverySearchBox').value.toLowerCase();
+      
+      let filtered = allDeliveryBoys;
+      
+      if (status === 'available') {
+        filtered = filtered.filter(db => db.current_orders === 0);
+      } else if (status === 'busy') {
+        filtered = filtered.filter(db => db.current_orders > 0);
+      }
+      
+      if (search) {
+        filtered = filtered.filter(db => 
+          db.name.toLowerCase().includes(search) ||
+          db.email.toLowerCase().includes(search) ||
+          db.phone.includes(search) ||
+          db.vehicle_number.toLowerCase().includes(search)
+        );
+      }
+      
+      displayDeliveryBoys(filtered);
+    }
+
+    function filterFeedback() {
+      const rating = document.getElementById('ratingFilter').value;
+      const filtered = rating === 'all' 
+        ? allFeedback 
+        : allFeedback.filter(fb => fb.rating === parseInt(rating));
+      displayFeedback(filtered);
+    }
+
+    function viewCustomerDetails(customerId) {
+      const customer = allCustomers.find(c => c.id === customerId);
+      const customerOrders = allOrders.filter(o => o.customer_id === customerId);
+      alert(`Customer Details:\n\nName: ${customer.name}\nEmail: ${customer.email}\nPhone: ${customer.phone}\nTotal Orders: ${customerOrders.length}`);
+    }
+
+    function viewDeliveryBoyDetails(deliveryBoyId) {
+      const db = allDeliveryBoys.find(d => d.id === deliveryBoyId);
+      const dbOrders = allOrders.filter(o => o.delivery_boy_id === deliveryBoyId);
+      alert(`Delivery Boy Details:\n\nName: ${db.name}\nEmail: ${db.email}\nPhone: ${db.phone}\nVehicle: ${db.vehicle_number}\nTotal Deliveries: ${dbOrders.filter(o => o.delivery_status === 'delivered').length}\nCurrent Orders: ${db.current_orders}`);
+    }
+
+    function formatDateTime(isoString) {
+      const date = new Date(isoString);
+      return date.toLocaleString('en-IN', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    function formatDate(isoString) {
+      const date = new Date(isoString);
+      return date.toLocaleDateString('en-IN');
+    }
+  </script>
+</body>
+</html>
